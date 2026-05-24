@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/index.html",
+      "PackagePath": "staticwebassets/index.html"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.YemekliYilan.Api.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.YemekliYilan.Api.props",
+      "PackagePath": "build\\YemekliYilan.Api.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.YemekliYilan.Api.props",
+      "PackagePath": "buildMultiTargeting\\YemekliYilan.Api.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.YemekliYilan.Api.props",
+      "PackagePath": "buildTransitive\\YemekliYilan.Api.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

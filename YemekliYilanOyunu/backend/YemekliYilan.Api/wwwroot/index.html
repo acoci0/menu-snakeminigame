@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Yemekli Yılan Oyunu</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, Helvetica, sans-serif;
+        background: radial-gradient(circle at top, #2b1020, #120812 70%);
+        color: #fff;
+        overflow: hidden;
+        touch-action: none;
+      }
+
+      .screen {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 18px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .panel {
+        width: 100%;
+        max-width: 420px;
+        padding: 24px;
+        border-radius: 26px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(12px);
+        text-align: center;
+      }
+
+      .title {
+        margin: 0 0 8px;
+        font-size: 30px;
+        color: #ffd6e7;
+        letter-spacing: 0.5px;
+      }
+
+      .subtitle {
+        margin: 0 0 22px;
+        color: #d8b7c9;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .form-group {
+        margin-bottom: 14px;
+        text-align: left;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        color: #f3d6e4;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      input {
+        width: 100%;
+        padding: 14px 15px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        outline: none;
+        background: rgba(0, 0, 0, 0.28);
+        color: #fff;
+        font-size: 15px;
+      }
+
+      input:focus {
+        border-color: #b1124b;
+        box-shadow: 0 0 0 3px rgba(177, 18, 75, 0.28);
+      }
+
+      .error-message {
+        min-height: 20px;
+        color: #ffb3c7;
+        font-size: 13px;
+        margin: 6px 0 12px;
+        text-align: left;
+        line-height: 1.4;
+      }
+
+      .primary-btn,
+      .secondary-btn {
+        width: 100%;
+        border: none;
+        border-radius: 15px;
+        padding: 14px 18px;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform 0.18s ease, opacity 0.18s ease,
+          box-shadow 0.18s ease;
+      }
+
+      .primary-btn {
+        color: #fff;
+        background: linear-gradient(135deg, #7b0f31, #b1124b, #e33468);
+        box-shadow: 0 14px 30px rgba(177, 18, 75, 0.35);
+      }
+
+      .secondary-btn {
+        margin-top: 10px;
+        color: #ffe6ef;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .primary-btn:active,
+      .secondary-btn:active {
+        transform: scale(0.96);
+        opacity: 0.9;
+      }
+
+      .game-screen {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .hud {
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        right: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        pointer-events: none;
+        z-index: 5;
+      }
+
+      .player-card,
+      .score-card {
+        padding: 10px 13px;
+        border-radius: 16px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(8px);
+      }
+
+      .player-card {
+        max-width: 165px;
+        text-align: left;
+      }
+
+      .player-label,
+      .score-label {
+        display: block;
+        font-size: 11px;
+        color: #d8b7c9;
+        margin-bottom: 3px;
+      }
+
+      .player-name {
+        display: block;
+        max-width: 135px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 15px;
+        font-weight: 900;
+        color: #fff;
+      }
+
+      .score-card {
+        min-width: 96px;
+        text-align: center;
+      }
+
+      .score-value {
+        display: block;
+        font-size: 28px;
+        font-weight: 900;
+        color: #ffd6e7;
+        line-height: 1;
+      }
+
+      .board-wrap {
+        width: min(94vw, 440px);
+        padding: 10px;
+        border-radius: 24px;
+        background: linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.14),
+          rgba(255, 255, 255, 0.04)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.55);
+      }
+
+      .game-board {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        display: grid;
+        grid-template-columns: repeat(16, 1fr);
+        grid-template-rows: repeat(16, 1fr);
+        gap: 2px;
+        padding: 7px;
+        border-radius: 18px;
+        background: #170911;
+        border: 2px solid rgba(255, 214, 231, 0.18);
+      }
+
+      .cell {
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.045);
+      }
+
+      .snake {
+        background: linear-gradient(135deg, #6e0f2f, #9a123f);
+        box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.18),
+          0 0 10px rgba(154, 18, 63, 0.45);
+      }
+
+      .snake-head {
+        background: linear-gradient(135deg, #8d123a, #c01952);
+        box-shadow: 0 0 15px rgba(192, 25, 82, 0.72);
+        position: relative;
+      }
+
+      .food {
+        background: rgba(255, 255, 255, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(14px, 5vw, 24px);
+        box-shadow: 0 0 14px rgba(255, 214, 231, 0.35);
+        animation: foodPulse 0.8s infinite alternate;
+      }
+
+      @keyframes foodPulse {
+        from {
+          transform: scale(0.88);
+        }
+        to {
+          transform: scale(1.08);
+        }
+      }
+
+      .mobile-controls {
+        width: min(84vw, 300px);
+        margin-top: 22px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        user-select: none;
+      }
+
+      .control-btn {
+        height: 58px;
+        border: none;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        font-size: 28px;
+        font-weight: 900;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+        touch-action: manipulation;
+      }
+
+      .control-btn:active {
+        transform: scale(0.94);
+        background: rgba(177, 18, 75, 0.5);
+      }
+
+      .control-empty {
+        visibility: hidden;
+      }
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.68);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        z-index: 20;
+      }
+
+      .modal {
+        width: 100%;
+        max-width: 420px;
+        padding: 24px;
+        border-radius: 26px;
+        background: #1b0b16;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
+        text-align: center;
+      }
+
+      .modal h2 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        color: #ffd6e7;
+      }
+
+      .final-score {
+        margin: 0 0 18px;
+        color: #d8b7c9;
+        font-weight: 700;
+      }
+
+      .best-table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 14px;
+        margin-bottom: 16px;
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .best-table th,
+      .best-table td {
+        padding: 10px 8px;
+        font-size: 13px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .best-table th {
+        color: #ffd6e7;
+        background: rgba(177, 18, 75, 0.2);
+      }
+
+      .best-table td {
+        color: #fff;
+      }
+
+      .modal-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .small-note {
+        margin-top: 14px;
+        color: #b998aa;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      @media (max-height: 720px) {
+        .board-wrap {
+          width: min(88vw, 380px);
+        }
+
+        .mobile-controls {
+          margin-top: 14px;
+        }
+
+        .control-btn {
+          height: 48px;
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section id="loginScreen" class="screen">
+      <div class="panel">
+        <h1 class="title">Yemekli Yılan</h1>
+        <p class="subtitle">
+          Mail ve şifre ile giriş yap, kullanıcı adını belirle ve yemekleri
+          sırayla topla.
+        </p>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="emailInput">Mail adresi</label>
+            <input
+              id="emailInput"
+              type="text"
+              inputmode="text"
+              placeholder="Mail adresini yaz"
+              autocomplete="off"
+              spellcheck="false"
+              autocapitalize="none"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="passwordInput">Şifre</label>
+            <input
+              id="passwordInput"
+              type="password"
+              inputmode="text"
+              placeholder="En az 6 karakter"
+              autocomplete="off"
+              spellcheck="false"
+              autocapitalize="none"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="usernameInput">Kullanıcı adı</label>
+            <input
+              id="usernameInput"
+              type="text"
+              placeholder="Oyuncu adın"
+              autocomplete="nickname"
+              required
+              minlength="3"
+              maxlength="18"
+            />
+          </div>
+
+          <div id="loginError" class="error-message"></div>
+          <button class="primary-btn" type="submit">Oyuna Başla</button>
+        </form>
+
+        <p class="small-note">
+          Not: Eğer girdiğiniz mail adresiyle daha önce kayıt olunmuşsa,
+          şifreniz doğruysa direkt olarak o kullanıcı adıyla giriş yaparsınız.
+          Yeni bir hesap oluşturmak için farklı bir mail adresi
+          kullanabilirsiniz.
+        </p>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="game-screen hidden">
+      <div class="hud">
+        <div class="player-card">
+          <span class="player-label">Oyuncu</span>
+          <span id="activePlayer" class="player-name">Oyuncu</span>
+        </div>
+
+        <div class="score-card">
+          <span class="score-label">Skor</span>
+          <span id="scoreValue" class="score-value">0</span>
+        </div>
+      </div>
+
+      <div class="board-wrap">
+        <div id="gameBoard" class="game-board"></div>
+      </div>
+
+      <div class="mobile-controls" aria-label="Yön tuşları">
+        <button class="control-btn control-empty" type="button"></button>
+        <button class="control-btn" type="button" data-direction="up">▲</button>
+        <button class="control-btn control-empty" type="button"></button>
+        <button class="control-btn" type="button" data-direction="left">
+          ◀
+        </button>
+        <button class="control-btn" type="button" data-direction="down">
+          ▼
+        </button>
+        <button class="control-btn" type="button" data-direction="right">
+          ▶
+        </button>
+      </div>
+    </section>
+
+    <div id="gameOverModal" class="modal-overlay hidden">
+      <div class="modal">
+        <h2>Oyun Bitti</h2>
+        <p id="finalScore" class="final-score">Skor: 0</p>
+
+        <table class="best-table">
+          <thead>
+            <tr>
+              <th>Sıra</th>
+              <th>Kullanıcı</th>
+              <th>Skor</th>
+            </tr>
+          </thead>
+          <tbody id="bestScoresBody"></tbody>
+        </table>
+
+        <div class="modal-buttons">
+          <button id="restartBtn" class="primary-btn" type="button">
+            Yeniden Oyna
+          </button>
+          <button id="closeBtn" class="secondary-btn" type="button">
+            Kapat
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE_URL = "/api";
+
+      const boardSize = 16;
+      const startSpeed = 220;
+      const minSpeed = 85;
+      const speedStep = 10;
+
+      const foodList = [
+        { name: "Çorba", icon: "🍲" },
+        { name: "Döner", icon: "🥙" },
+        { name: "Kebap", icon: "🍢" },
+        { name: "Dürüm", icon: "🌯" },
+        { name: "Salata", icon: "🥗" },
+      ];
+
+      const bannedWords = [
+        "salak",
+        "aptal",
+        "gerizekali",
+        "gerizekalı",
+        "mal",
+        "siker",
+        "sik",
+        "amk",
+        "aq",
+        "orospu",
+        "piç",
+        "pic",
+        "göt",
+        "got",
+        "yarrak",
+        "yarak",
+        "ibne",
+        "puşt",
+        "pust",
+        "kahpe",
+        "sürtük",
+        "surtuk",
+        "fuck",
+        "shit",
+        "bitch",
+        "asshole",
+      ];
+
+      const loginScreen = document.getElementById("loginScreen");
+      const gameScreen = document.getElementById("gameScreen");
+      const loginForm = document.getElementById("loginForm");
+      const emailInput = document.getElementById("emailInput");
+      const passwordInput = document.getElementById("passwordInput");
+      const usernameInput = document.getElementById("usernameInput");
+      const loginError = document.getElementById("loginError");
+      const activePlayer = document.getElementById("activePlayer");
+      const scoreValue = document.getElementById("scoreValue");
+      const gameBoard = document.getElementById("gameBoard");
+      const gameOverModal = document.getElementById("gameOverModal");
+      const finalScore = document.getElementById("finalScore");
+      const bestScoresBody = document.getElementById("bestScoresBody");
+      const restartBtn = document.getElementById("restartBtn");
+      const closeBtn = document.getElementById("closeBtn");
+
+      let cells = [];
+      let snake;
+      let food;
+      let direction;
+      let nextDirection;
+      let score;
+      let speed;
+      let timer;
+      let currentUser = "Oyuncu";
+      let foodIndex = 0;
+      let gameRunning = false;
+      let authToken = localStorage.getItem("yemekliYilanToken") || "";
+
+      function normalizeText(text) {
+        return text
+          .toLocaleLowerCase("tr-TR")
+          .replace(/ı/g, "i")
+          .replace(/ğ/g, "g")
+          .replace(/ü/g, "u")
+          .replace(/ş/g, "s")
+          .replace(/ö/g, "o")
+          .replace(/ç/g, "c")
+          .replace(/[^a-z0-9]/g, "");
+      }
+
+      function containsBadWord(username) {
+        const cleanName = normalizeText(username);
+        return bannedWords.some((word) =>
+          cleanName.includes(normalizeText(word))
+        );
+      }
+
+      function isValidUsername(username) {
+        const trimmed = username.trim();
+        return /^[a-zA-Z0-9ğüşöçıİĞÜŞÖÇ_\- ]{3,18}$/.test(trimmed);
+      }
+
+      loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const username = usernameInput.value.trim();
+
+        loginError.textContent = "";
+
+        if (email.length === 0) {
+          loginError.textContent = "Mail adresi alanı boş bırakılamaz.";
+          return;
+        }
+
+        if (password.length < 6) {
+          loginError.textContent = "Şifre en az 6 karakter olmalıdır.";
+          return;
+        }
+
+        if (!isValidUsername(username)) {
+          loginError.textContent =
+            "Kullanıcı adı 3-18 karakter olmalı; harf, rakam, boşluk, _ veya - içerebilir.";
+          return;
+        }
+
+        if (containsBadWord(username)) {
+          loginError.textContent =
+            "Bu kullanıcı adı uygun değil. Lütfen argo veya hakaret içermeyen farklı bir ad seç.";
+          usernameInput.focus();
+          usernameInput.select();
+          return;
+        }
+
+        try {
+          const data = await registerOrLogin(email, password, username);
+
+          authToken = data.token;
+          localStorage.setItem("yemekliYilanToken", authToken);
+
+          currentUser = data.username || username;
+          activePlayer.textContent = currentUser;
+
+          loginScreen.classList.add("hidden");
+          gameScreen.classList.remove("hidden");
+
+          startGame();
+        } catch (error) {
+          loginError.textContent = error.message;
+        }
+      });
+      async function registerOrLogin(email, password, username) {
+        const registerResponse = await fetch(`${API_BASE_URL}/Auth/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            username,
+          }),
+        });
+
+        if (registerResponse.ok) {
+          return await registerResponse.json();
+        }
+
+        const registerErrorText = await registerResponse.text();
+
+        const shouldTryLogin =
+          registerErrorText.includes("mail adresi zaten kayıtlı") ||
+          registerErrorText.includes("Bu mail adresi zaten kayıtlı");
+
+        if (!shouldTryLogin) {
+          throw new Error(registerErrorText || "Kayıt işlemi başarısız oldu.");
+        }
+
+        const loginResponse = await fetch(`${API_BASE_URL}/Auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
+
+        if (!loginResponse.ok) {
+          const loginErrorText = await loginResponse.text();
+          throw new Error(loginErrorText || "Giriş işlemi başarısız oldu.");
+        }
+
+        return await loginResponse.json();
+      }
+
+      function createBoard() {
+        gameBoard.innerHTML = "";
+        cells = [];
+
+        for (let i = 0; i < boardSize * boardSize; i++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          gameBoard.appendChild(cell);
+          cells.push(cell);
+        }
+      }
+
+      function startGame() {
+        createBoard();
+        snake = [
+          { x: 7, y: 8 },
+          { x: 6, y: 8 },
+          { x: 5, y: 8 },
+        ];
+        direction = { x: 1, y: 0 };
+        nextDirection = { x: 1, y: 0 };
+        score = 0;
+        speed = startSpeed;
+        foodIndex = 0;
+        gameRunning = true;
+        scoreValue.textContent = score;
+        spawnFood();
+        draw();
+        resetTimer();
+      }
+
+      function resetTimer() {
+        clearInterval(timer);
+        timer = setInterval(gameLoop, speed);
+      }
+
+      function gameLoop() {
+        direction = nextDirection;
+
+        const head = snake[0];
+        const newHead = {
+          x: head.x + direction.x,
+          y: head.y + direction.y,
+        };
+
+        if (isCollision(newHead)) {
+          endGame();
+          return;
+        }
+
+        snake.unshift(newHead);
+
+        if (newHead.x === food.x && newHead.y === food.y) {
+          score += 1;
+          scoreValue.textContent = score;
+          foodIndex = (foodIndex + 1) % foodList.length;
+          speed = Math.max(minSpeed, speed - speedStep);
+          spawnFood();
+          resetTimer();
+        } else {
+          snake.pop();
+        }
+
+        draw();
+      }
+
+      function isCollision(position) {
+        const hitWall =
+          position.x < 0 ||
+          position.x >= boardSize ||
+          position.y < 0 ||
+          position.y >= boardSize;
+        const hitSelf = snake.some(
+          (part) => part.x === position.x && part.y === position.y
+        );
+        return hitWall || hitSelf;
+      }
+
+      function spawnFood() {
+        let newFood;
+        do {
+          newFood = {
+            x: Math.floor(Math.random() * boardSize),
+            y: Math.floor(Math.random() * boardSize),
+          };
+        } while (
+          snake.some((part) => part.x === newFood.x && part.y === newFood.y)
+        );
+
+        food = newFood;
+      }
+
+      function draw() {
+        cells.forEach((cell) => {
+          cell.className = "cell";
+          cell.textContent = "";
+        });
+
+        snake.forEach((part, index) => {
+          const cell = getCell(part.x, part.y);
+          if (!cell) return;
+          cell.classList.add(index === 0 ? "snake-head" : "snake");
+        });
+
+        const foodCell = getCell(food.x, food.y);
+        if (foodCell) {
+          foodCell.classList.add("food");
+          foodCell.textContent = foodList[foodIndex].icon;
+          foodCell.title = foodList[foodIndex].name;
+        }
+      }
+
+      function getCell(x, y) {
+        return cells[y * boardSize + x];
+      }
+
+      function changeDirection(newDirection) {
+        if (!gameRunning) return;
+
+        const directions = {
+          up: { x: 0, y: -1 },
+          down: { x: 0, y: 1 },
+          left: { x: -1, y: 0 },
+          right: { x: 1, y: 0 },
+        };
+
+        const selected = directions[newDirection];
+        if (!selected) return;
+
+        const isOpposite =
+          selected.x + direction.x === 0 && selected.y + direction.y === 0;
+        if (!isOpposite) {
+          nextDirection = selected;
+        }
+      }
+
+      document.addEventListener("keydown", function (event) {
+        const activeTag = document.activeElement.tagName.toLowerCase();
+        const isTypingArea =
+          activeTag === "input" ||
+          activeTag === "textarea" ||
+          document.activeElement.isContentEditable;
+
+        if (isTypingArea || !gameRunning) {
+          return;
+        }
+
+        const keyMap = {
+          ArrowUp: "up",
+          ArrowDown: "down",
+          ArrowLeft: "left",
+          ArrowRight: "right",
+          w: "up",
+          s: "down",
+          a: "left",
+          d: "right",
+          W: "up",
+          S: "down",
+          A: "left",
+          D: "right",
+        };
+
+        if (keyMap[event.key]) {
+          event.preventDefault();
+          changeDirection(keyMap[event.key]);
+        }
+      });
+
+      document.querySelectorAll("[data-direction]").forEach((button) => {
+        button.addEventListener("click", () =>
+          changeDirection(button.dataset.direction)
+        );
+        button.addEventListener(
+          "touchstart",
+          (event) => {
+            event.preventDefault();
+            changeDirection(button.dataset.direction);
+          },
+          { passive: false }
+        );
+      });
+
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      gameScreen.addEventListener(
+        "touchstart",
+        (event) => {
+          const touch = event.touches[0];
+          touchStartX = touch.clientX;
+          touchStartY = touch.clientY;
+        },
+        { passive: true }
+      );
+
+      gameScreen.addEventListener(
+        "touchmove",
+        (event) => {
+          event.preventDefault();
+        },
+        { passive: false }
+      );
+
+      gameScreen.addEventListener(
+        "touchend",
+        (event) => {
+          const touch = event.changedTouches[0];
+          const diffX = touch.clientX - touchStartX;
+          const diffY = touch.clientY - touchStartY;
+
+          if (Math.max(Math.abs(diffX), Math.abs(diffY)) < 24) return;
+
+          if (Math.abs(diffX) > Math.abs(diffY)) {
+            changeDirection(diffX > 0 ? "right" : "left");
+          } else {
+            changeDirection(diffY > 0 ? "down" : "up");
+          }
+        },
+        { passive: true }
+      );
+
+      async function endGame() {
+        gameRunning = false;
+        clearInterval(timer);
+
+        await saveScoreToApi(score);
+        await showGameOver();
+      }
+
+      async function getScoresFromApi() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/Scores`);
+
+          if (!response.ok) {
+            throw new Error("Skorlar alınamadı.");
+          }
+
+          return await response.json();
+        } catch (error) {
+          console.error(error);
+          return [];
+        }
+      }
+
+      async function saveScoreToApi(userScore) {
+        if (!authToken) {
+          console.warn("Token bulunamadı. Skor kaydedilemedi.");
+          return;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/Scores`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + authToken,
+          },
+          body: JSON.stringify({
+            score: userScore,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Skor kaydedilemedi:", errorText);
+        }
+      }
+
+      async function showGameOver() {
+        finalScore.textContent = `Skor: ${score}`;
+        await renderBestScores();
+        gameOverModal.classList.remove("hidden");
+      }
+
+      async function renderBestScores() {
+        const scores = await getScoresFromApi();
+        bestScoresBody.innerHTML = "";
+
+        if (scores.length === 0) {
+          bestScoresBody.innerHTML = `<tr><td colspan="3">Henüz skor yok</td></tr>`;
+          return;
+        }
+
+        scores.forEach((item, index) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${escapeHtml(item.username)}</td>
+            <td>${item.score}</td>
+          `;
+          bestScoresBody.appendChild(tr);
+        });
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      restartBtn.addEventListener("click", function () {
+        gameOverModal.classList.add("hidden");
+        startGame();
+      });
+
+      closeBtn.addEventListener("click", function () {
+        gameOverModal.classList.add("hidden");
+        gameScreen.classList.add("hidden");
+        loginScreen.classList.remove("hidden");
+        loginForm.reset();
+        loginError.textContent = "";
+      });
+    </script>
+  </body>
+</html>
