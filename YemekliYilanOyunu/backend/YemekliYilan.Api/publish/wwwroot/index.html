@@ -232,7 +232,24 @@
       .cell {
         border-radius: 5px;
         background: rgba(255, 255, 255, 0.045);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        overflow: hidden;
+        min-width: 0;
+        min-height: 0;
+
+        line-height: 1;
       }
+
+      .cell.food {
+        font-size: clamp(13px, 4.5vw, 21px);
+        line-height: 1;
+        text-align: center;
+      }
+
 
       .snake {
         background: linear-gradient(135deg, #6e0f2f, #9a123f);
@@ -742,8 +759,8 @@
 
         const head = snake[0];
         const newHead = {
-          x: head.x + direction.x,
-          y: head.y + direction.y,
+          x: (head.x + direction.x + boardSize) % boardSize,
+          y: (head.y + direction.y + boardSize) % boardSize,
         };
 
         if (isCollision(newHead)) {
@@ -768,16 +785,12 @@
       }
 
       function isCollision(position) {
-        const hitWall =
-          position.x < 0 ||
-          position.x >= boardSize ||
-          position.y < 0 ||
-          position.y >= boardSize;
         const hitSelf = snake.some(
           (part) => part.x === position.x && part.y === position.y
-        );
-        return hitWall || hitSelf;
-      }
+      );
+
+      return hitSelf;
+    }
 
       function spawnFood() {
         let newFood;
