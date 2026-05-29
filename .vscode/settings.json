@@ -1,4 +1,4 @@
 {
     "appService.defaultWebAppToDeploy": "/subscriptions/6d2ee591-8bfc-4b94-86cd-401679232059/resourceGroups/appsvc_windows_westeurope/providers/Microsoft.Web/sites/yemekli-yilan-oyunu",
-    "appService.deploySubpath": "."
+    "appService.deploySubpath": "YemekliYilanOyunu/backend/YemekliYilan.Api/publish"
 }

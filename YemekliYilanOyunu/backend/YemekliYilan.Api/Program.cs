@@ -40,18 +40,17 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+    var homePath = Environment.GetEnvironmentVariable("HOME");
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("FrontendPolicy", policy =>
-    {
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
+    var databaseFolder = !string.IsNullOrWhiteSpace(homePath)
+        ? Path.Combine(homePath, "data")
+        : AppContext.BaseDirectory;
+
+    Directory.CreateDirectory(databaseFolder);
+
+    var databasePath = Path.Combine(databaseFolder, "yemekli_yilan_live.db");
+
+    options.UseSqlite($"Data Source={databasePath}");
 });
 
 var jwtKey = builder.Configuration["Jwt:Key"];
@@ -83,6 +82,21 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.EnsureCreated();
+
+        app.Logger.LogInformation("SQLite veritabanı başarıyla hazırlandı.");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "SQLite veritabanı hazırlanırken hata oluştu.");
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {
