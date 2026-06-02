@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "LpST5Kj8BRaBw976aeDsyurNinVv3SsL2CmZUeyv1Aw=",
+  "Hash": "IQTQMX70qXn0m3bchQQ+TllHw9d1RTG2fSVBs2DmKQA=",
   "Source": "YemekliYilan.Api",
   "BasePath": "_content/YemekliYilan.Api",
   "Mode": "Default",
@@ -16,6 +16,25 @@
     }
   ],
   "Assets": [
+    {
+      "Identity": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/assets/LOGO.png",
+      "SourceId": "YemekliYilan.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/",
+      "BasePath": "_content/YemekliYilan.Api",
+      "RelativePath": "assets/LOGO.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/assets/LOGO.png"
+    },
     {
       "Identity": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/index.html",
       "SourceId": "YemekliYilan.Api",

@@ -354,6 +354,8 @@
       }
 
       .game-board {
+        position: relative;
+        overflow: hidden;
         width: 100%;
         aspect-ratio: 1 / 1;
         display: grid;
@@ -366,7 +368,31 @@
         border: 2px solid rgba(255, 214, 231, 0.18);
       }
 
+      .game-board::before {
+        content: "";
+        position: absolute;
+        inset: 7px;
+        border-radius: 14px;
+        background-image: url("./assets/LOGO.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 88%;
+        opacity: 0.30;
+        filter: drop-shadow(0 0 16px rgba(255, 214, 231, 0.18));
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .snake,
+      .snake-head,
+      .food {
+        position: relative;
+        z-index: 2;
+      }
+
       .cell {
+        position: relative;
+        z-index: 1;
         border-radius: 5px;
         background: rgba(255, 255, 255, 0.045);
 
