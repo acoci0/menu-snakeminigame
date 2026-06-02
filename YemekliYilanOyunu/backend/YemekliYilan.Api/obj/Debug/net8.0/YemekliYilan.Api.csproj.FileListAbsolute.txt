@@ -181,3 +181,8 @@
 /Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/obj/Debug/net8.0/YemekliYilan.Api.pdb
 /Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/obj/Debug/net8.0/YemekliYilan.Api.genruntimeconfig.cache
 /Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/obj/Debug/net8.0/ref/YemekliYilan.Api.dll
+/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/bin/Debug/net8.0/publish/web.config
+/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/bin/Debug/net8.0/publish/appsettings.Development.json
+/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/bin/Debug/net8.0/publish/appsettings.json
+/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/bin/Debug/net8.0/publish/YemekliYilan.Api.deps.json
+/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/bin/Debug/net8.0/publish/YemekliYilan.Api.runtimeconfig.json

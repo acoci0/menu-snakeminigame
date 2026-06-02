@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "qkgERV4E6j4=",
+  "dgSpecHash": "EubkLuJqzRg=",
   "success": true,
-  "projectFilePath": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/YemekliYilan.Api.csproj",
+  "projectFilePath": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/YemekliYilan.Api.csproj",
   "expectedPackageFiles": [
     "/Users/abdussamedcoci/.nuget/packages/azure.core/1.38.0/azure.core.1.38.0.nupkg.sha512",
     "/Users/abdussamedcoci/.nuget/packages/azure.identity/1.11.4/azure.identity.1.11.4.nupkg.sha512",

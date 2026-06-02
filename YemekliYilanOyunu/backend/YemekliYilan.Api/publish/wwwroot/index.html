@@ -49,6 +49,20 @@
         text-align: center;
       }
 
+      .leaderboard-panel {
+        max-width: 520px;
+      }
+
+      #menuPlayerName {
+        color: #ffd6e7;
+        font-weight: 900;
+      }
+
+      .menu-actions {
+        display: grid;
+        gap: 10px;
+      }
+
       .title {
         margin: 0 0 8px;
         font-size: 30px;
@@ -101,6 +115,64 @@
         line-height: 1.4;
       }
 
+      .pause-btn {
+        pointer-events: auto;
+        width: 52px;
+        height: 52px;
+        padding: 0;
+        border: none;
+        border-radius: 15px;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.38);
+        font-size: 22px;
+        font-weight: 900;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 14px 30px rgba(177, 18, 75, 0.3);
+      }
+
+      .pause-btn span {
+        position: relative;
+        z-index: 2;
+      }
+
+      .pause-btn:active {
+        transform: scale(0.94);
+      }
+
+      .pause-btn.paused::before {
+        background: conic-gradient(
+          from 0deg,
+          transparent 0deg,
+          transparent 65deg,
+          #b5ffcc 95deg,
+          #2f9e55 130deg,
+          #145c2a 160deg,
+          transparent 205deg,
+          transparent 360deg
+        );
+      }
+
+      .pause-btn.countdown::before {
+        background: conic-gradient(
+          from 0deg,
+          transparent 0deg,
+          transparent 65deg,
+          #ffe7a8 95deg,
+          #ffb02e 130deg,
+          #b96d00 160deg,
+          transparent 205deg,
+          transparent 360deg
+        );
+      }
+
+      .pause-btn:disabled {
+        opacity: 0.9;
+        cursor: wait;
+      }
+
       .primary-btn,
       .secondary-btn {
         width: 100%;
@@ -149,11 +221,24 @@
         top: 14px;
         left: 14px;
         right: 14px;
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
         align-items: flex-start;
+        gap: 10px;
         pointer-events: none;
         z-index: 5;
+      }
+
+      .player-card {
+        justify-self: start;
+      }
+
+      .score-card {
+        justify-self: center;
+      }
+
+      .pause-btn {
+        justify-self: end;
       }
 
       .player-card,
@@ -203,6 +288,61 @@
         line-height: 1;
       }
 
+      .neon-frame {
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+        border: none !important;
+      }
+
+      .neon-frame::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        padding: 1.5px;
+        border-radius: inherit;
+        background: conic-gradient(
+          from 0deg,
+          transparent 0deg,
+          transparent 70deg,
+          #ffd6e7 95deg,
+          #e33468 120deg,
+          #7b0f31 145deg,
+          transparent 185deg,
+          transparent 360deg
+        );
+        animation: neonRotate 3s linear infinite;
+        pointer-events: none;
+        z-index: 0;
+
+        -webkit-mask: 
+          linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+
+        mask:
+          linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+        mask-composite: exclude;
+      }
+
+      .neon-frame > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      @keyframes neonRotate {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes neonRotate {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
       .board-wrap {
         width: min(94vw, 440px);
         padding: 10px;
@@ -249,7 +389,6 @@
         line-height: 1;
         text-align: center;
       }
-
 
       .snake {
         background: linear-gradient(135deg, #6e0f2f, #9a123f);
@@ -464,17 +603,68 @@
       </div>
     </section>
 
+    <section id="menuScreen" class="screen hidden">
+      <div class="panel">
+        <h1 class="title">Yemekli Yılan</h1>
+        <p class="subtitle">
+          Hoş geldin, <span id="menuPlayerName">Oyuncu</span>. Ne yapmak
+          istersin?
+        </p>
+
+        <div class="menu-actions">
+          <button id="startGameBtn" class="primary-btn" type="button">
+            Oyunu Başlat
+          </button>
+
+          <button id="openScoresBtn" class="secondary-btn" type="button">
+            Skor Tablosunu Gör
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="leaderboardScreen" class="screen hidden">
+      <div class="panel leaderboard-panel">
+        <h1 class="title">Skor Tablosu</h1>
+        <p class="subtitle">En yüksek skora sahip ilk 15 kullanıcı</p>
+
+        <table class="best-table">
+          <thead>
+            <tr>
+              <th>Sıra</th>
+              <th>Kullanıcı</th>
+              <th>Skor</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+
+        <button id="backToMenuBtn" class="secondary-btn" type="button">
+          Menüye Geri Dön
+        </button>
+      </div>
+    </section>
+
     <section id="gameScreen" class="game-screen hidden">
       <div class="hud">
-        <div class="player-card">
+        <div class="player-card neon-frame">
           <span class="player-label">Oyuncu</span>
           <span id="activePlayer" class="player-name">Oyuncu</span>
         </div>
 
-        <div class="score-card">
+        <div class="score-card neon-frame">
           <span class="score-label">Skor</span>
           <span id="scoreValue" class="score-value">0</span>
         </div>
+
+        <button
+          id="pauseBtn"
+          class="pause-btn neon-frame"
+          type="button"
+          aria-label="Duraklat"
+        >
+          <span id="pauseBtnText">⏸</span>
+        </button>
       </div>
 
       <div class="board-wrap">
@@ -528,13 +718,13 @@
       const API_BASE_URL = "/api";
 
       const boardSize = 16;
-      const startSpeed = 220;
+      const startSpeed = 230;
       const minSpeed = 85;
-      const speedStep = 10;
+      const speedStep = 5;
 
       const foodList = [
         { name: "Çorba", icon: "🍲" },
-        { name: "Döner", icon: "🥙" },
+        { name: "Tavuk", icon: "🍗" },
         { name: "Kebap", icon: "🍢" },
         { name: "Dürüm", icon: "🌯" },
         { name: "Salata", icon: "🥗" },
@@ -571,6 +761,13 @@
 
       const loginScreen = document.getElementById("loginScreen");
       const gameScreen = document.getElementById("gameScreen");
+      const menuScreen = document.getElementById("menuScreen");
+      const leaderboardScreen = document.getElementById("leaderboardScreen");
+      const menuPlayerName = document.getElementById("menuPlayerName");
+      const startGameBtn = document.getElementById("startGameBtn");
+      const openScoresBtn = document.getElementById("openScoresBtn");
+      const backToMenuBtn = document.getElementById("backToMenuBtn");
+      const leaderboardBody = document.getElementById("leaderboardBody");
       const loginForm = document.getElementById("loginForm");
       const emailInput = document.getElementById("emailInput");
       const passwordInput = document.getElementById("passwordInput");
@@ -584,6 +781,8 @@
       const bestScoresBody = document.getElementById("bestScoresBody");
       const restartBtn = document.getElementById("restartBtn");
       const closeBtn = document.getElementById("closeBtn");
+      const pauseBtn = document.getElementById("pauseBtn");
+      const pauseBtnText = document.getElementById("pauseBtnText");
 
       let cells = [];
       let snake;
@@ -596,6 +795,9 @@
       let currentUser = "Oyuncu";
       let foodIndex = 0;
       let gameRunning = false;
+      let isPaused = false;
+      let isResumeCountingDown = false;
+      let resumeCountdownTimer = null;
       let authToken = localStorage.getItem("yemekliYilanToken") || "";
 
       function normalizeText(text) {
@@ -664,8 +866,12 @@
           currentUser = data.username || username;
           activePlayer.textContent = currentUser;
 
+          menuPlayerName.textContent = currentUser;
+
           loginScreen.classList.add("hidden");
-          gameScreen.classList.remove("hidden");
+          gameScreen.classList.add("hidden");
+          leaderboardScreen.classList.add("hidden");
+          menuScreen.classList.remove("hidden");
 
           startGame();
         } catch (error) {
@@ -743,6 +949,15 @@
         speed = startSpeed;
         foodIndex = 0;
         gameRunning = true;
+        isPaused = false;
+        isResumeCountingDown = false;
+        clearInterval(resumeCountdownTimer);
+
+        pauseBtn.disabled = false;
+        pauseBtnText.textContent = "⏸";
+        pauseBtn.classList.remove("paused", "countdown");
+        pauseBtn.setAttribute("aria-label", "Duraklat");
+
         scoreValue.textContent = score;
         spawnFood();
         draw();
@@ -754,7 +969,70 @@
         timer = setInterval(gameLoop, speed);
       }
 
+      function pauseGame() {
+        if (!gameRunning || isPaused || isResumeCountingDown) return;
+
+        isPaused = true;
+        clearInterval(timer);
+        clearInterval(resumeCountdownTimer);
+
+        pauseBtn.disabled = false;
+        pauseBtnText.textContent = "▶";
+        pauseBtn.classList.add("paused");
+        pauseBtn.classList.remove("countdown");
+        pauseBtn.setAttribute("aria-label", "Devam Et");
+      }
+
+      function startResumeCountdown() {
+        if (!gameRunning || !isPaused || isResumeCountingDown) return;
+
+        isResumeCountingDown = true;
+
+        pauseBtn.disabled = true;
+        pauseBtn.classList.remove("paused");
+        pauseBtn.classList.add("countdown");
+
+        let remainingSeconds = 3;
+        pauseBtnText.textContent = remainingSeconds;
+
+        resumeCountdownTimer = setInterval(function () {
+          remainingSeconds -= 1;
+
+          if (remainingSeconds > 0) {
+            pauseBtnText.textContent = remainingSeconds;
+            return;
+          }
+
+          clearInterval(resumeCountdownTimer);
+
+          isPaused = false;
+          isResumeCountingDown = false;
+
+          pauseBtn.disabled = false;
+          pauseBtnText.textContent = "⏸";
+          pauseBtn.classList.remove("paused", "countdown");
+          pauseBtn.setAttribute("aria-label", "Duraklat");
+
+          resetTimer();
+        }, 1000);
+      }
+
+      function togglePause() {
+        if (!gameRunning) return;
+        if (isResumeCountingDown) return;
+
+        if (isPaused) {
+          startResumeCountdown();
+        } else {
+          pauseGame();
+        }
+      }
+
       function gameLoop() {
+        if (!gameRunning || isPaused || isResumeCountingDown) {
+          return;
+        }
+
         direction = nextDirection;
 
         const head = snake[0];
@@ -787,10 +1065,10 @@
       function isCollision(position) {
         const hitSelf = snake.some(
           (part) => part.x === position.x && part.y === position.y
-      );
+        );
 
-      return hitSelf;
-    }
+        return hitSelf;
+      }
 
       function spawnFood() {
         let newFood;
@@ -831,7 +1109,7 @@
       }
 
       function changeDirection(newDirection) {
-        if (!gameRunning) return;
+        if (!gameRunning || isPaused || isResumeCountingDown) return;
 
         const directions = {
           up: { x: 0, y: -1 },
@@ -937,7 +1215,16 @@
 
       async function endGame() {
         gameRunning = false;
+        isPaused = false;
+        isResumeCountingDown = false;
+
         clearInterval(timer);
+        clearInterval(resumeCountdownTimer);
+
+        pauseBtn.disabled = false;
+        pauseBtnText.textContent = "⏸";
+        pauseBtn.classList.remove("paused", "countdown");
+        pauseBtn.setAttribute("aria-label", "Duraklat");
 
         await saveScoreToApi(score);
         await showGameOver();
@@ -989,21 +1276,49 @@
 
       async function renderBestScores() {
         const scores = await getScoresFromApi();
+        const topScores = scores.slice(0, 15);
+
         bestScoresBody.innerHTML = "";
 
-        if (scores.length === 0) {
+        if (topScores.length === 0) {
           bestScoresBody.innerHTML = `<tr><td colspan="3">Henüz skor yok</td></tr>`;
           return;
         }
 
-        scores.forEach((item, index) => {
+        topScores.forEach((item, index) => {
           const tr = document.createElement("tr");
+
           tr.innerHTML = `
             <td>${index + 1}</td>
             <td>${escapeHtml(item.username)}</td>
             <td>${item.score}</td>
           `;
+
           bestScoresBody.appendChild(tr);
+        });
+      }
+
+      async function renderLeaderboardScores() {
+        const scores = await getScoresFromApi();
+        const topScores = scores.slice(0, 15);
+
+        leaderboardBody.innerHTML = "";
+
+        if (topScores.length === 0) {
+          leaderboardBody.innerHTML = `<tr><td colspan="3">Henüz skor yok</td></tr>`;
+          return;
+        }
+
+        topScores.forEach((item, index) => {
+          const tr = document.createElement("tr");
+
+          tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${escapeHtml(item.username)}</td>
+            <td>${item.score}</td>
+    `;
+
+          leaderboardBody.appendChild(tr);
         });
       }
 
@@ -1016,17 +1331,50 @@
           .replace(/'/g, "&#039;");
       }
 
+      startGameBtn.addEventListener("click", function () {
+        menuScreen.classList.add("hidden");
+        leaderboardScreen.classList.add("hidden");
+        gameOverModal.classList.add("hidden");
+        gameScreen.classList.remove("hidden");
+
+        startGame();
+      });
+
+      openScoresBtn.addEventListener("click", async function () {
+        menuScreen.classList.add("hidden");
+        gameScreen.classList.add("hidden");
+        gameOverModal.classList.add("hidden");
+        leaderboardScreen.classList.remove("hidden");
+
+        await renderLeaderboardScores();
+      });
+
+      backToMenuBtn.addEventListener("click", function () {
+        leaderboardScreen.classList.add("hidden");
+        gameScreen.classList.add("hidden");
+        gameOverModal.classList.add("hidden");
+        menuScreen.classList.remove("hidden");
+      });
+
+      pauseBtn.addEventListener("click", function () {
+        togglePause();
+      });
+
       restartBtn.addEventListener("click", function () {
         gameOverModal.classList.add("hidden");
+        leaderboardScreen.classList.add("hidden");
+        menuScreen.classList.add("hidden");
+        gameScreen.classList.remove("hidden");
+
         startGame();
       });
 
       closeBtn.addEventListener("click", function () {
         gameOverModal.classList.add("hidden");
         gameScreen.classList.add("hidden");
-        loginScreen.classList.remove("hidden");
-        loginForm.reset();
-        loginError.textContent = "";
+        leaderboardScreen.classList.add("hidden");
+
+        menuScreen.classList.remove("hidden");
       });
     </script>
   </body>

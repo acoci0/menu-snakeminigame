@@ -4944,11 +4944,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/YemekliYilan.Api.csproj",
+      "projectUniqueName": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/YemekliYilan.Api.csproj",
       "projectName": "YemekliYilan.Api",
-      "projectPath": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/YemekliYilan.Api.csproj",
+      "projectPath": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/YemekliYilan.Api.csproj",
       "packagesPath": "/Users/abdussamedcoci/.nuget/packages/",
-      "outputPath": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/obj/",
+      "outputPath": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/abdussamedcoci/.nuget/NuGet/NuGet.Config"

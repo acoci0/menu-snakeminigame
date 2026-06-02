@@ -25,7 +25,7 @@ public class ScoresController : ControllerBase
         var scores = await _context.Scores
             .Include(x => x.AppUser)
             .OrderByDescending(x => x.Value)
-            .Take(10)
+            .Take(15)
             .Select(x => new
             {
                 username = x.AppUser.Username,
@@ -67,19 +67,37 @@ public class ScoresController : ControllerBase
             };
 
             _context.Scores.Add(newScore);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "İlk skor kaydedildi.",
+                score = dto.Score,
+                bestScore = dto.Score
+            });
         }
-        else
+
+        if (dto.Score > existingScore.Value)
         {
             existingScore.Value = dto.Score;
             existingScore.UpdatedAt = DateTime.UtcNow;
-        }
 
-        await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Yeni en yüksek skor kaydedildi.",
+                score = dto.Score,
+                bestScore = existingScore.Value
+            });
+        }
 
         return Ok(new
         {
-            message = "Skor kaydedildi.",
-            score = dto.Score
+            message = "Skor önceki en yüksek skoru geçemediği için güncellenmedi.",
+            score = dto.Score,
+            bestScore = existingScore.Value
         });
     }
 }
