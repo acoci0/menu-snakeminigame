@@ -7,6 +7,10 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>Yemekli Yılan Oyunu</title>
+    <meta name="theme-color" content="#080006" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Yemekli Yılan" />
 
     <style>
       * {
@@ -14,14 +18,26 @@
         -webkit-tap-highlight-color: transparent;
       }
 
+      html {
+        min-height: 100%;
+        background: #080006;
+      }
+
       body {
         margin: 0;
         min-height: 100vh;
+        min-height: 100svh;
+        min-height: 100dvh;
         font-family: Arial, Helvetica, sans-serif;
-        background: radial-gradient(circle at top, #2b1020, #120812 70%);
+        background:
+          radial-gradient(circle at 50% 0%, rgba(255, 214, 231, 0.16), transparent 34%),
+          radial-gradient(circle at 50% 68%, rgba(177, 18, 75, 0.14), transparent 38%),
+          linear-gradient(180deg, #2b1020 0%, #14020c 58%, #080006 100%);
         color: #fff;
-        overflow: hidden;
-        touch-action: none;
+        overflow-x: hidden;
+        overflow-y: auto;
+        touch-action: manipulation;
+        overscroll-behavior: none;
       }
 
       .screen {
@@ -138,6 +154,53 @@
         z-index: 2;
       }
 
+      .pause-icon {
+        position: relative;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+      }
+
+      .pause-icon-pause::before,
+      .pause-icon-pause::after {
+        content: "";
+        width: 6px;
+        height: 22px;
+        border-radius: 3px;
+        background: #ffffff;
+        box-shadow:
+          0 0 8px rgba(255, 255, 255, 0.8),
+          0 0 16px rgba(255, 214, 231, 0.35);
+      }
+
+      .pause-icon-pause::before {
+        margin-right: 5px;
+      }
+
+      .pause-icon-play {
+        width: 0;
+        height: 0;
+        border-top: 12px solid transparent;
+        border-bottom: 12px solid transparent;
+        border-left: 18px solid #ffffff;
+        filter:
+          drop-shadow(0 0 7px rgba(255, 255, 255, 0.85))
+          drop-shadow(0 0 14px rgba(255, 214, 231, 0.35));
+      }
+
+      .pause-countdown {
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 900;
+        line-height: 1;
+        text-shadow:
+          0 0 8px rgba(255, 255, 255, 0.85),
+          0 0 16px rgba(255, 214, 231, 0.35);
+      }
+
       .pause-btn:active {
         transform: scale(0.94);
       }
@@ -209,11 +272,18 @@
         position: relative;
         width: 100%;
         min-height: 100vh;
+        min-height: 100svh;
+        min-height: 100dvh;
         padding: 16px;
+        padding-bottom: calc(42px + env(safe-area-inset-bottom));
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(255, 214, 231, 0.14), transparent 36%),
+          radial-gradient(circle at 50% 72%, rgba(177, 18, 75, 0.16), transparent 42%),
+          linear-gradient(180deg, #2b1020 0%, #14020c 56%, #080006 100%);
       }
 
       .hud {
@@ -252,8 +322,8 @@
       }
 
       .player-card {
-        max-width: 165px;
-        text-align: left;
+        text-align: center;
+        align-items: center;
       }
 
       .player-label,
@@ -285,6 +355,81 @@
         font-size: 28px;
         font-weight: 900;
         color: #ffd6e7;
+        line-height: 1;
+      }
+
+      :root {
+        --hud-box-width: 96px;
+        --hud-box-height: 66px;
+      }
+
+      .hud {
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        right: 14px;
+        display: grid;
+        grid-template-columns: repeat(3, var(--hud-box-width));
+        justify-content: space-between;
+        align-items: start;
+        gap: 10px;
+        pointer-events: none;
+        z-index: 30;
+      }
+
+      .player-card,
+      .score-card,
+      .pause-btn {
+        width: var(--hud-box-width);
+        height: var(--hud-box-height);
+        min-width: var(--hud-box-width);
+        min-height: var(--hud-box-height);
+        max-width: var(--hud-box-width);
+        max-height: var(--hud-box-height);
+      }
+
+      .player-card,
+      .score-card {
+        padding: 9px 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .player-card {
+        text-align: center;
+        align-items: center;
+      }
+
+      .score-card {
+        text-align: center;
+        align-items: center;
+      }
+
+      .pause-btn {
+        padding: 0;
+        justify-self: end;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+      }
+
+      .player-label,
+      .score-label {
+        font-size: 11px;
+        line-height: 1.1;
+        margin-bottom: 4px;
+      }
+
+      .player-name {
+        max-width: 76px;
+        font-size: 15px;
+        line-height: 1.1;
+        text-align: center;
+      }
+
+      .score-value {
+        font-size: 28px;
         line-height: 1;
       }
 
@@ -326,12 +471,6 @@
       .neon-frame > * {
         position: relative;
         z-index: 1;
-      }
-
-      @keyframes neonRotate {
-        to {
-          transform: rotate(360deg);
-        }
       }
 
       @keyframes neonRotate {
@@ -545,25 +684,6 @@
         pointer-events: none;
       }
 
-      @media (max-height: 720px) {
-        .board-wrap {
-          width: min(88vw, 380px);
-        }
-
-        .mobile-controls {
-          width: min(80vw, 260px);
-          margin-top: 14px;
-          padding: 12px;
-          gap: 9px;
-        }
-
-        .control-btn {
-          height: 50px;
-          font-size: 23px;
-          border-radius: 17px;
-        }
-      }
-
       .modal-overlay {
         position: fixed;
         inset: 0;
@@ -636,20 +756,191 @@
         line-height: 1.45;
       }
 
+      .designer-footer {
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+
+        width: 100vw;
+        max-width: 100vw;
+        margin-top: 34px;
+        margin-bottom: calc(18px + env(safe-area-inset-bottom));
+        padding: 12px 18px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+
+        align-self: center;
+        text-decoration: none;
+        text-align: center;
+
+        background:
+          linear-gradient(
+            90deg,
+            rgba(255, 214, 231, 0.015),
+            rgba(255, 214, 231, 0.07),
+            rgba(255, 214, 231, 0.015)
+          ),
+          rgba(8, 0, 6, 0.42);
+
+        border-top: 1px solid rgba(255, 214, 231, 0.14);
+        border-bottom: 1px solid rgba(255, 214, 231, 0.14);
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
+
+        color: rgba(255, 230, 239, 0.72);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: clamp(10px, 2.4vw, 12px);
+        font-weight: 800;
+        letter-spacing: 0.85px;
+
+        box-shadow:
+          0 14px 34px rgba(0, 0, 0, 0.24),
+          inset 0 1px 0 rgba(255, 255, 255, 0.06),
+          inset 0 -1px 0 rgba(255, 214, 231, 0.06);
+
+        backdrop-filter: blur(8px);
+        cursor: pointer;
+        opacity: 0.84;
+        transition: opacity 0.16s ease, transform 0.16s ease;
+      }
+
+      .designer-footer::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          120deg,
+          transparent 0%,
+          rgba(255, 255, 255, 0.04) 35%,
+          rgba(255, 255, 255, 0.14) 50%,
+          rgba(255, 255, 255, 0.04) 65%,
+          transparent 100%
+        );
+        transform: translateX(-120%);
+        animation: footerLightSweep 6s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .designer-label,
+      .designer-name {
+        position: relative;
+        z-index: 1;
+
+        background: linear-gradient(
+          110deg,
+          rgba(255, 230, 239, 0.48) 0%,
+          rgba(255, 230, 239, 0.68) 22%,
+          rgba(255, 255, 255, 1) 38%,
+          rgba(255, 214, 231, 0.78) 52%,
+          rgba(255, 255, 255, 1) 66%,
+          rgba(255, 230, 239, 0.68) 82%,
+          rgba(255, 230, 239, 0.48) 100%
+        );
+        background-size: 260% 100%;
+        background-position: 0% 50%;
+
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+
+        text-decoration: none;
+        text-shadow:
+          0 0 6px rgba(255, 255, 255, 0.14),
+          0 0 12px rgba(255, 214, 231, 0.1);
+
+        animation: designerTextWave 5.5s ease-in-out infinite;
+      }
+
+      .designer-label {
+        font-weight: 800;
+      }
+
+      .designer-name {
+        font-weight: 950;
+        letter-spacing: 1px;
+      }
+
+      .designer-footer:hover {
+        opacity: 1;
+      }
+
+      .designer-footer:active {
+        transform: scale(0.985);
+        opacity: 1;
+      }
+
+      @keyframes designerTextWave {
+        0% {
+          background-position: 0% 50%;
+        }
+
+        50% {
+          background-position: 100% 50%;
+        }
+
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      @keyframes footerLightSweep {
+        0% {
+          transform: translateX(-120%);
+        }
+
+        50% {
+          transform: translateX(120%);
+        }
+
+        100% {
+          transform: translateX(-120%);
+        }
+      }
+
       @media (max-width: 600px) {
         .game-screen {
+          min-height: 100vh;
+          min-height: 100svh;
+          min-height: 100dvh;
           justify-content: flex-start !important;
           padding-top: calc(150px + env(safe-area-inset-top)) !important;
           padding-left: 12px;
           padding-right: 12px;
-          padding-bottom: 18px;
+          padding-bottom: calc(36px + env(safe-area-inset-bottom)) !important;
         }
 
         .hud {
           top: calc(12px + env(safe-area-inset-top)) !important;
           left: 18px;
           right: 18px;
+          grid-template-columns: repeat(3, 90px);
           z-index: 30;
+        }
+
+        .player-card,
+        .score-card,
+        .pause-btn {
+          width: 90px;
+          height: 64px;
+          min-width: 90px;
+          min-height: 64px;
+          max-width: 90px;
+          max-height: 64px;
+        }
+
+        .player-name {
+          max-width: 70px;
+          font-size: 14px;
+          text-align: center;
+        }
+
+        .score-value {
+          font-size: 26px;
         }
 
         .board-wrap {
@@ -660,7 +951,18 @@
         .mobile-controls {
           margin-top: 24px !important;
         }
+
+        .designer-footer {
+          width: 100vw;
+          max-width: 100vw;
+          margin-top: 32px;
+          margin-bottom: calc(18px + env(safe-area-inset-bottom));
+          padding: 11px 14px;
+          font-size: clamp(9px, 2.55vw, 11px);
+        }
       }
+
+      
 
       @media (max-height: 720px) {
         .board-wrap {
@@ -668,14 +970,25 @@
         }
 
         .mobile-controls {
+          width: min(80vw, 260px);
           margin-top: 14px;
+          padding: 12px;
+          gap: 9px;
         }
 
         .control-btn {
-          height: 48px;
-          font-size: 24px;
+          height: 50px;
+          font-size: 23px;
+          border-radius: 17px;
+        }
+
+        .designer-footer {
+          margin-top: 26px;
+          font-size: clamp(9px, 2.4vw, 10px);
+          padding: 10px 12px;
         }
       }
+
     </style>
   </head>
   <body>
@@ -802,7 +1115,7 @@
           type="button"
           aria-label="Duraklat"
         >
-          <span id="pauseBtnText">⏸</span>
+          <span id="pauseBtnText" class="pause-icon pause-icon-pause"></span>
         </button>
       </div>
 
@@ -824,6 +1137,18 @@
           ▶
         </button>
       </div>
+
+      <a
+        class="designer-footer"
+        href="https://www.linkedin.com/in/coci/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Tasarımcı bilgisi"
+      >
+        <span class="designer-label">#TASARIMCI BİLGİSİ:</span>
+        <span class="designer-name">-@ACOCI-</span>
+      </a>
+
     </section>
 
     <div id="gameOverModal" class="modal-overlay hidden">
@@ -1010,9 +1335,9 @@
           loginScreen.classList.add("hidden");
           gameScreen.classList.add("hidden");
           leaderboardScreen.classList.add("hidden");
+          gameOverModal.classList.add("hidden");
           menuScreen.classList.remove("hidden");
 
-          startGame();
         } catch (error) {
           loginError.textContent = error.message;
         }
@@ -1093,7 +1418,7 @@
         clearInterval(resumeCountdownTimer);
 
         pauseBtn.disabled = false;
-        pauseBtnText.textContent = "⏸";
+        setPauseIconPause();
         pauseBtn.classList.remove("paused", "countdown");
         pauseBtn.setAttribute("aria-label", "Duraklat");
 
@@ -1108,6 +1433,21 @@
         timer = setInterval(gameLoop, speed);
       }
 
+      function setPauseIconPause() {
+        pauseBtnText.textContent = "";
+        pauseBtnText.className = "pause-icon pause-icon-pause";
+      }
+
+      function setPauseIconPlay() {
+        pauseBtnText.textContent = "";
+        pauseBtnText.className = "pause-icon pause-icon-play";
+      }
+
+      function setPauseCountdownText(value) {
+        pauseBtnText.textContent = String(value);
+        pauseBtnText.className = "pause-countdown";
+      }
+
       function pauseGame() {
         if (!gameRunning || isPaused || isResumeCountingDown) return;
 
@@ -1116,7 +1456,7 @@
         clearInterval(resumeCountdownTimer);
 
         pauseBtn.disabled = false;
-        pauseBtnText.textContent = "▶";
+        setPauseIconPlay();
         pauseBtn.classList.add("paused");
         pauseBtn.classList.remove("countdown");
         pauseBtn.setAttribute("aria-label", "Devam Et");
@@ -1132,13 +1472,13 @@
         pauseBtn.classList.add("countdown");
 
         let remainingSeconds = 3;
-        pauseBtnText.textContent = remainingSeconds;
+        setPauseCountdownText(remainingSeconds);
 
         resumeCountdownTimer = setInterval(function () {
           remainingSeconds -= 1;
 
           if (remainingSeconds > 0) {
-            pauseBtnText.textContent = remainingSeconds;
+            setPauseCountdownText(remainingSeconds);
             return;
           }
 
@@ -1148,7 +1488,7 @@
           isResumeCountingDown = false;
 
           pauseBtn.disabled = false;
-          pauseBtnText.textContent = "⏸";
+          setPauseIconPause();
           pauseBtn.classList.remove("paused", "countdown");
           pauseBtn.setAttribute("aria-label", "Duraklat");
 
@@ -1340,7 +1680,13 @@
       gameScreen.addEventListener(
         "touchmove",
         (event) => {
-          event.preventDefault();
+          const shouldLockScroll = event.target.closest(
+            ".board-wrap, .mobile-controls, .hud"
+          );
+
+          if (shouldLockScroll) {
+            event.preventDefault();
+          }
         },
         { passive: false }
       );
@@ -1372,7 +1718,7 @@
         clearInterval(resumeCountdownTimer);
 
         pauseBtn.disabled = false;
-        pauseBtnText.textContent = "⏸";
+        setPauseIconPause();
         pauseBtn.classList.remove("paused", "countdown");
         pauseBtn.setAttribute("aria-label", "Duraklat");
 
