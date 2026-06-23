@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YemekliYilan.Api.Data;
 
@@ -10,9 +11,11 @@ using YemekliYilan.Api.Data;
 namespace YemekliYilan.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260623184409_AddGameSessions")]
+    partial class AddGameSessions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.13");
@@ -69,9 +72,6 @@ namespace YemekliYilan.Api.Migrations
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("LastFoodAt")
-                        .HasColumnType("TEXT");
 
                     b.Property<int>("LastSubmittedScore")
                         .HasColumnType("INTEGER");

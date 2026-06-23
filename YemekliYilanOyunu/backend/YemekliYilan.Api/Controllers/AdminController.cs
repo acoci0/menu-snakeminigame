@@ -66,6 +66,53 @@ public class AdminController : ControllerBase
         });
     }
 
+    [HttpPatch("scores/reset-by-username")]
+    public async Task<IActionResult> ResetScoreByUsername([FromQuery] string username)
+    {
+        if (!IsAuthorized())
+        {
+            return Unauthorized("Yetkisiz işlem.");
+        }
+
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return BadRequest("Kullanıcı adı boş olamaz.");
+        }
+
+        var cleanUsername = username.Trim();
+
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x =>
+                x.Username.Trim() == cleanUsername ||
+                x.NormalizedUsername == cleanUsername.ToLower()
+            );
+
+        if (user is null)
+        {
+            return NotFound("Kullanıcı bulunamadı.");
+        }
+
+        var score = await _context.Scores
+            .FirstOrDefaultAsync(x => x.AppUserId == user.Id);
+
+        if (score is null)
+        {
+            return NotFound("Bu kullanıcının skoru bulunamadı.");
+        }
+
+        score.Value = 0;
+        score.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            message = "Kullanıcı skoru sıfırlandı.",
+            username = user.Username,
+            score = score.Value
+        });
+    }
+
     [HttpDelete("users/all")]
     public async Task<IActionResult> DeleteAllUsers()
     {

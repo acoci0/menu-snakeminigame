@@ -1180,12 +1180,12 @@
 
     <script>
       const API_BASE_URL = "/api";
-
+    
       const boardSize = 16;
       const startSpeed = 230;
       const minSpeed = 85;
       const speedStep = 5;
-
+    
       const foodList = [
         { name: "Çorba", icon: "🍲" },
         { name: "Tavuk", icon: "🍗" },
@@ -1193,7 +1193,7 @@
         { name: "Dürüm", icon: "🌯" },
         { name: "Salata", icon: "🥗" },
       ];
-
+    
       const bannedWords = [
         "salak",
         "aptal",
@@ -1222,7 +1222,7 @@
         "bitch",
         "asshole",
       ];
-
+    
       const loginScreen = document.getElementById("loginScreen");
       const gameScreen = document.getElementById("gameScreen");
       const menuScreen = document.getElementById("menuScreen");
@@ -1247,7 +1247,7 @@
       const closeBtn = document.getElementById("closeBtn");
       const pauseBtn = document.getElementById("pauseBtn");
       const pauseBtnText = document.getElementById("pauseBtnText");
-
+    
       let cells = [];
       let snake;
       let food;
@@ -1263,7 +1263,12 @@
       let isResumeCountingDown = false;
       let resumeCountdownTimer = null;
       let authToken = localStorage.getItem("yemekliYilanToken") || "";
-
+    
+      let currentGameSessionId = null;
+      let scoreReportQueue = Promise.resolve();
+      let scoreReportFailed = false;
+      let isEndingGame = false;
+    
       function normalizeText(text) {
         return text
           .toLocaleLowerCase("tr-TR")
@@ -1275,44 +1280,44 @@
           .replace(/ç/g, "c")
           .replace(/[^a-z0-9]/g, "");
       }
-
+    
       function containsBadWord(username) {
         const cleanName = normalizeText(username);
         return bannedWords.some((word) =>
           cleanName.includes(normalizeText(word))
         );
       }
-
+    
       function isValidUsername(username) {
         const trimmed = username.trim();
         return /^[a-zA-Z0-9ğüşöçıİĞÜŞÖÇ_\- ]{3,18}$/.test(trimmed);
       }
-
+    
       loginForm.addEventListener("submit", async function (event) {
         event.preventDefault();
-
+    
         const email = emailInput.value;
         const password = passwordInput.value;
         const username = usernameInput.value.trim();
-
+    
         loginError.textContent = "";
-
+    
         if (email.length === 0) {
           loginError.textContent = "Mail adresi alanı boş bırakılamaz.";
           return;
         }
-
+    
         if (password.length < 6) {
           loginError.textContent = "Şifre en az 6 karakter olmalıdır.";
           return;
         }
-
+    
         if (!isValidUsername(username)) {
           loginError.textContent =
             "Kullanıcı adı 3-18 karakter olmalı; harf, rakam, boşluk, _ veya - içerebilir.";
           return;
         }
-
+    
         if (containsBadWord(username)) {
           loginError.textContent =
             "Bu kullanıcı adı uygun değil. Lütfen argo veya hakaret içermeyen farklı bir ad seç.";
@@ -1320,28 +1325,27 @@
           usernameInput.select();
           return;
         }
-
+    
         try {
           const data = await registerOrLogin(email, password, username);
-
+    
           authToken = data.token;
           localStorage.setItem("yemekliYilanToken", authToken);
-
+    
           currentUser = data.username || username;
           activePlayer.textContent = currentUser;
-
           menuPlayerName.textContent = currentUser;
-
+    
           loginScreen.classList.add("hidden");
           gameScreen.classList.add("hidden");
           leaderboardScreen.classList.add("hidden");
           gameOverModal.classList.add("hidden");
           menuScreen.classList.remove("hidden");
-
         } catch (error) {
           loginError.textContent = error.message;
         }
       });
+    
       async function registerOrLogin(email, password, username) {
         const registerResponse = await fetch(`${API_BASE_URL}/Auth/register`, {
           method: "POST",
@@ -1354,21 +1358,21 @@
             username,
           }),
         });
-
+    
         if (registerResponse.ok) {
           return await registerResponse.json();
         }
-
+    
         const registerErrorText = await registerResponse.text();
-
+    
         const shouldTryLogin =
           registerErrorText.includes("mail adresi zaten kayıtlı") ||
           registerErrorText.includes("Bu mail adresi zaten kayıtlı");
-
+    
         if (!shouldTryLogin) {
           throw new Error(registerErrorText || "Kayıt işlemi başarısız oldu.");
         }
-
+    
         const loginResponse = await fetch(`${API_BASE_URL}/Auth/login`, {
           method: "POST",
           headers: {
@@ -1379,19 +1383,96 @@
             password,
           }),
         });
-
+    
         if (!loginResponse.ok) {
           const loginErrorText = await loginResponse.text();
           throw new Error(loginErrorText || "Giriş işlemi başarısız oldu.");
         }
-
+    
         return await loginResponse.json();
       }
-
+    
+      async function startScoreSession() {
+        if (!authToken) {
+          throw new Error("Giriş tokenı bulunamadı. Lütfen tekrar giriş yap.");
+        }
+    
+        const response = await fetch(`${API_BASE_URL}/Scores/session/start`, {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + authToken,
+          },
+        });
+    
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || "Oyun oturumu başlatılamadı.");
+        }
+    
+        const data = await response.json();
+        currentGameSessionId = data.gameSessionId;
+      }
+    
+      async function reportFoodCollectedToApi() {
+        if (!authToken || !currentGameSessionId) {
+          return;
+        }
+    
+        const response = await fetch(`${API_BASE_URL}/Scores/session/food`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + authToken,
+          },
+          body: JSON.stringify({
+            score: 0,
+            gameSessionId: currentGameSessionId,
+          }),
+        });
+    
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || "Yemek toplama bildirimi reddedildi.");
+        }
+    
+        return await response.json();
+      }
+    
+      function queueFoodCollectedReport() {
+        scoreReportQueue = scoreReportQueue
+          .then(() => reportFoodCollectedToApi())
+          .catch((error) => {
+            scoreReportFailed = true;
+            console.error("Yemek bildirimi başarısız:", error.message);
+    
+            if (gameRunning) {
+              forceStopGameBecauseOfSecurityError(error.message);
+            }
+          });
+      }
+    
+      async function forceStopGameBecauseOfSecurityError(message) {
+        gameRunning = false;
+        isPaused = false;
+        isResumeCountingDown = false;
+    
+        clearInterval(timer);
+        clearInterval(resumeCountdownTimer);
+    
+        pauseBtn.disabled = false;
+        setPauseIconPause();
+        pauseBtn.classList.remove("paused", "countdown");
+        pauseBtn.setAttribute("aria-label", "Duraklat");
+    
+        alert(message || "Skor doğrulaması başarısız olduğu için oyun durduruldu.");
+    
+        await showGameOver();
+      }
+    
       function createBoard() {
         gameBoard.innerHTML = "";
         cells = [];
-
+    
         for (let i = 0; i < boardSize * boardSize; i++) {
           const cell = document.createElement("div");
           cell.className = "cell";
@@ -1399,14 +1480,16 @@
           cells.push(cell);
         }
       }
-
+    
       function startGame() {
         createBoard();
+    
         snake = [
           { x: 7, y: 8 },
           { x: 6, y: 8 },
           { x: 5, y: 8 },
         ];
+    
         direction = { x: 1, y: 0 };
         nextDirection = { x: 1, y: 0 };
         score = 0;
@@ -1415,142 +1498,155 @@
         gameRunning = true;
         isPaused = false;
         isResumeCountingDown = false;
+        isEndingGame = false;
+    
+        scoreReportQueue = Promise.resolve();
+        scoreReportFailed = false;
+    
         clearInterval(resumeCountdownTimer);
-
+    
         pauseBtn.disabled = false;
         setPauseIconPause();
         pauseBtn.classList.remove("paused", "countdown");
         pauseBtn.setAttribute("aria-label", "Duraklat");
-
+    
         scoreValue.textContent = score;
+    
         spawnFood();
         draw();
         resetTimer();
       }
-
+    
       function resetTimer() {
         clearInterval(timer);
         timer = setInterval(gameLoop, speed);
       }
-
+    
       function setPauseIconPause() {
         pauseBtnText.textContent = "";
         pauseBtnText.className = "pause-icon pause-icon-pause";
       }
-
+    
       function setPauseIconPlay() {
         pauseBtnText.textContent = "";
         pauseBtnText.className = "pause-icon pause-icon-play";
       }
-
+    
       function setPauseCountdownText(value) {
         pauseBtnText.textContent = String(value);
         pauseBtnText.className = "pause-countdown";
       }
-
+    
       function pauseGame() {
         if (!gameRunning || isPaused || isResumeCountingDown) return;
-
+    
         isPaused = true;
+    
         clearInterval(timer);
         clearInterval(resumeCountdownTimer);
-
+    
         pauseBtn.disabled = false;
         setPauseIconPlay();
         pauseBtn.classList.add("paused");
         pauseBtn.classList.remove("countdown");
         pauseBtn.setAttribute("aria-label", "Devam Et");
       }
-
+    
       function startResumeCountdown() {
         if (!gameRunning || !isPaused || isResumeCountingDown) return;
-
+    
         isResumeCountingDown = true;
-
+    
         pauseBtn.disabled = true;
         pauseBtn.classList.remove("paused");
         pauseBtn.classList.add("countdown");
-
+    
         let remainingSeconds = 3;
         setPauseCountdownText(remainingSeconds);
-
+    
         resumeCountdownTimer = setInterval(function () {
           remainingSeconds -= 1;
-
+    
           if (remainingSeconds > 0) {
             setPauseCountdownText(remainingSeconds);
             return;
           }
-
+    
           clearInterval(resumeCountdownTimer);
-
+    
           isPaused = false;
           isResumeCountingDown = false;
-
+    
           pauseBtn.disabled = false;
           setPauseIconPause();
           pauseBtn.classList.remove("paused", "countdown");
           pauseBtn.setAttribute("aria-label", "Duraklat");
-
+    
           resetTimer();
         }, 1000);
       }
-
+    
       function togglePause() {
         if (!gameRunning) return;
         if (isResumeCountingDown) return;
-
+    
         if (isPaused) {
           startResumeCountdown();
         } else {
           pauseGame();
         }
       }
-
+    
       function gameLoop() {
         if (!gameRunning || isPaused || isResumeCountingDown) {
           return;
         }
-
+    
         direction = nextDirection;
-
+    
         const head = snake[0];
+    
         const newHead = {
           x: (head.x + direction.x + boardSize) % boardSize,
           y: (head.y + direction.y + boardSize) % boardSize,
         };
-
+    
         if (isCollision(newHead)) {
           endGame();
           return;
         }
-
+    
         snake.unshift(newHead);
-
+    
         if (newHead.x === food.x && newHead.y === food.y) {
           score += 1;
           scoreValue.textContent = score;
+    
+          queueFoodCollectedReport();
+    
           foodIndex = (foodIndex + 1) % foodList.length;
           speed = Math.max(minSpeed, speed - speedStep);
+    
           spawnFood();
           resetTimer();
         } else {
           snake.pop();
         }
-
+    
         draw();
       }
-
+    
       function isCollision(position) {
         const hitSelf = snake.some(
           (part) => part.x === position.x && part.y === position.y
         );
-
+    
         return hitSelf;
       }
-
+    
       function spawnFood() {
         let newFood;
+    
         do {
           newFood = {
             x: Math.floor(Math.random() * boardSize),
@@ -1559,65 +1655,71 @@
         } while (
           snake.some((part) => part.x === newFood.x && part.y === newFood.y)
         );
-
+    
         food = newFood;
       }
-
+    
       function draw() {
         cells.forEach((cell) => {
           cell.className = "cell";
           cell.textContent = "";
         });
-
+    
         snake.forEach((part, index) => {
           const cell = getCell(part.x, part.y);
+    
           if (!cell) return;
+    
           cell.classList.add(index === 0 ? "snake-head" : "snake");
         });
-
+    
         const foodCell = getCell(food.x, food.y);
+    
         if (foodCell) {
           foodCell.classList.add("food");
           foodCell.textContent = foodList[foodIndex].icon;
           foodCell.title = foodList[foodIndex].name;
         }
       }
-
+    
       function getCell(x, y) {
         return cells[y * boardSize + x];
       }
-
+    
       function changeDirection(newDirection) {
         if (!gameRunning || isPaused || isResumeCountingDown) return;
-
+    
         const directions = {
           up: { x: 0, y: -1 },
           down: { x: 0, y: 1 },
           left: { x: -1, y: 0 },
           right: { x: 1, y: 0 },
         };
-
+    
         const selected = directions[newDirection];
+    
         if (!selected) return;
-
+    
         const isOpposite =
           selected.x + direction.x === 0 && selected.y + direction.y === 0;
+    
         if (!isOpposite) {
           nextDirection = selected;
         }
       }
-
+    
       document.addEventListener("keydown", function (event) {
         const activeTag = document.activeElement.tagName.toLowerCase();
+    
         const isTypingArea =
           activeTag === "input" ||
           activeTag === "textarea" ||
           document.activeElement.isContentEditable;
-
+    
         if (isTypingArea || !gameRunning) {
           return;
         }
-
+    
         const keyMap = {
           ArrowUp: "up",
           ArrowDown: "down",
@@ -1632,74 +1734,77 @@
           A: "left",
           D: "right",
         };
-
+    
         if (keyMap[event.key]) {
           event.preventDefault();
           changeDirection(keyMap[event.key]);
         }
       });
-
+    
       document.querySelectorAll("[data-direction]").forEach((button) => {
         function pressDirection(event) {
           event.preventDefault();
           event.stopPropagation();
-
+    
           button.classList.add("is-pressing");
           changeDirection(button.dataset.direction);
         }
-
+    
         function releaseDirection() {
           button.classList.remove("is-pressing");
         }
-
+    
         button.addEventListener("pointerdown", pressDirection, {
           passive: false,
         });
+    
         button.addEventListener("pointerup", releaseDirection);
         button.addEventListener("pointercancel", releaseDirection);
         button.addEventListener("pointerleave", releaseDirection);
-
+    
         button.addEventListener("contextmenu", function (event) {
           event.preventDefault();
         });
       });
-
+    
       let touchStartX = 0;
       let touchStartY = 0;
-
+    
       gameScreen.addEventListener(
         "touchstart",
         (event) => {
           const touch = event.touches[0];
+    
           touchStartX = touch.clientX;
           touchStartY = touch.clientY;
         },
         { passive: true }
       );
-
+    
       gameScreen.addEventListener(
         "touchmove",
         (event) => {
           const shouldLockScroll = event.target.closest(
             ".board-wrap, .mobile-controls, .hud"
           );
-
+    
           if (shouldLockScroll) {
             event.preventDefault();
           }
         },
         { passive: false }
       );
-
+    
       gameScreen.addEventListener(
         "touchend",
         (event) => {
           const touch = event.changedTouches[0];
+    
           const diffX = touch.clientX - touchStartX;
           const diffY = touch.clientY - touchStartY;
-
+    
           if (Math.max(Math.abs(diffX), Math.abs(diffY)) < 24) return;
-
+    
           if (Math.abs(diffX) > Math.abs(diffY)) {
             changeDirection(diffX > 0 ? "right" : "left");
           } else {
@@ -1708,45 +1813,60 @@
         },
         { passive: true }
       );
-
+    
       async function endGame() {
+        if (isEndingGame) {
+          return;
+        }
+    
+        isEndingGame = true;
         gameRunning = false;
         isPaused = false;
         isResumeCountingDown = false;
-
+    
         clearInterval(timer);
         clearInterval(resumeCountdownTimer);
-
+    
         pauseBtn.disabled = false;
         setPauseIconPause();
         pauseBtn.classList.remove("paused", "countdown");
         pauseBtn.setAttribute("aria-label", "Duraklat");
-
-        await saveScoreToApi(score);
+    
+        await scoreReportQueue;
+    
+        if (!scoreReportFailed) {
+          await saveScoreToApi(score);
+        }
+    
         await showGameOver();
       }
-
+    
       async function getScoresFromApi() {
         try {
           const response = await fetch(`${API_BASE_URL}/Scores`);
-
+    
           if (!response.ok) {
             throw new Error("Skorlar alınamadı.");
           }
-
+    
           return await response.json();
         } catch (error) {
           console.error(error);
           return [];
         }
       }
-
+    
       async function saveScoreToApi(userScore) {
         if (!authToken) {
           console.warn("Token bulunamadı. Skor kaydedilemedi.");
           return;
         }
-
+    
+        if (!currentGameSessionId) {
+          console.warn("Oyun oturumu bulunamadı. Skor kaydedilemedi.");
+          return;
+        }
+    
         const response = await fetch(`${API_BASE_URL}/Scores`, {
           method: "POST",
           headers: {
@@ -1755,69 +1875,75 @@
           },
           body: JSON.stringify({
             score: userScore,
+            gameSessionId: currentGameSessionId,
           }),
         });
-
+    
         if (!response.ok) {
           const errorText = await response.text();
           console.error("Skor kaydedilemedi:", errorText);
+          return;
         }
+    
+        currentGameSessionId = null;
       }
-
+    
       async function showGameOver() {
         finalScore.textContent = `Skor: ${score}`;
+    
         await renderBestScores();
+    
         gameOverModal.classList.remove("hidden");
       }
-
+    
       async function renderBestScores() {
         const scores = await getScoresFromApi();
         const topScores = scores.slice(0, 15);
-
+    
         bestScoresBody.innerHTML = "";
-
+    
         if (topScores.length === 0) {
           bestScoresBody.innerHTML = `<tr><td colspan="3">Henüz skor yok</td></tr>`;
           return;
         }
-
+    
         topScores.forEach((item, index) => {
           const tr = document.createElement("tr");
-
+    
           tr.innerHTML = `
             <td>${index + 1}</td>
             <td>${escapeHtml(item.username)}</td>
             <td>${item.score}</td>
           `;
-
+    
           bestScoresBody.appendChild(tr);
         });
       }
-
+    
       async function renderLeaderboardScores() {
         const scores = await getScoresFromApi();
         const topScores = scores.slice(0, 15);
-
+    
         leaderboardBody.innerHTML = "";
-
+    
         if (topScores.length === 0) {
           leaderboardBody.innerHTML = `<tr><td colspan="3">Henüz skor yok</td></tr>`;
           return;
         }
-
+    
         topScores.forEach((item, index) => {
           const tr = document.createElement("tr");
-
+    
           tr.innerHTML = `
             <td>${index + 1}</td>
             <td>${escapeHtml(item.username)}</td>
             <td>${item.score}</td>
-    `;
-
+          `;
+    
           leaderboardBody.appendChild(tr);
         });
       }
-
+    
       function escapeHtml(value) {
         return String(value)
           .replace(/&/g, "&amp;")
@@ -1826,50 +1952,61 @@
           .replace(/"/g, "&quot;")
           .replace(/'/g, "&#039;");
       }
-
-      startGameBtn.addEventListener("click", function () {
-        menuScreen.classList.add("hidden");
-        leaderboardScreen.classList.add("hidden");
-        gameOverModal.classList.add("hidden");
-        gameScreen.classList.remove("hidden");
-
-        startGame();
+    
+      async function startSecureGame() {
+        try {
+          startGameBtn.disabled = true;
+          restartBtn.disabled = true;
+    
+          await startScoreSession();
+    
+          menuScreen.classList.add("hidden");
+          leaderboardScreen.classList.add("hidden");
+          gameOverModal.classList.add("hidden");
+          gameScreen.classList.remove("hidden");
+    
+          startGame();
+        } catch (error) {
+          console.error(error);
+          alert(error.message || "Oyun başlatılamadı. Lütfen tekrar deneyin.");
+        } finally {
+          startGameBtn.disabled = false;
+          restartBtn.disabled = false;
+        }
+      }
+    
+      startGameBtn.addEventListener("click", async function () {
+        await startSecureGame();
       });
-
+    
       openScoresBtn.addEventListener("click", async function () {
         menuScreen.classList.add("hidden");
         gameScreen.classList.add("hidden");
         gameOverModal.classList.add("hidden");
         leaderboardScreen.classList.remove("hidden");
-
+    
         await renderLeaderboardScores();
       });
-
+    
       backToMenuBtn.addEventListener("click", function () {
         leaderboardScreen.classList.add("hidden");
         gameScreen.classList.add("hidden");
         gameOverModal.classList.add("hidden");
         menuScreen.classList.remove("hidden");
       });
-
+    
       pauseBtn.addEventListener("click", function () {
         togglePause();
       });
-
-      restartBtn.addEventListener("click", function () {
-        gameOverModal.classList.add("hidden");
-        leaderboardScreen.classList.add("hidden");
-        menuScreen.classList.add("hidden");
-        gameScreen.classList.remove("hidden");
-
-        startGame();
+    
+      restartBtn.addEventListener("click", async function () {
+        await startSecureGame();
       });
-
+    
       closeBtn.addEventListener("click", function () {
         gameOverModal.classList.add("hidden");
         gameScreen.classList.add("hidden");
         leaderboardScreen.classList.add("hidden");
-
         menuScreen.classList.remove("hidden");
       });
     </script>

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "IQTQMX70qXn0m3bchQQ+TllHw9d1RTG2fSVBs2DmKQA=",
+  "Hash": "9Kescz60UwKO3kcHKyWTf4Ug9Y2AZzwSrrYHYZ7cgYY=",
   "Source": "YemekliYilan.Api",
   "BasePath": "_content/YemekliYilan.Api",
   "Mode": "Default",
@@ -10,17 +10,17 @@
     {
       "Name": "YemekliYilan.Api/wwwroot",
       "Source": "YemekliYilan.Api",
-      "ContentRoot": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/",
+      "ContentRoot": "/Users/abdussamedcoci/Desktop/GitHub/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/",
       "BasePath": "_content/YemekliYilan.Api",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/assets/LOGO.png",
+      "Identity": "/Users/abdussamedcoci/Desktop/GitHub/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/assets/LOGO.png",
       "SourceId": "YemekliYilan.Api",
       "SourceType": "Discovered",
-      "ContentRoot": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/",
+      "ContentRoot": "/Users/abdussamedcoci/Desktop/GitHub/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/",
       "BasePath": "_content/YemekliYilan.Api",
       "RelativePath": "assets/LOGO.png",
       "AssetKind": "All",
@@ -36,10 +36,10 @@
       "OriginalItemSpec": "wwwroot/assets/LOGO.png"
     },
     {
-      "Identity": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/index.html",
+      "Identity": "/Users/abdussamedcoci/Desktop/GitHub/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/index.html",
       "SourceId": "YemekliYilan.Api",
       "SourceType": "Discovered",
-      "ContentRoot": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/",
+      "ContentRoot": "/Users/abdussamedcoci/Desktop/GitHub/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/",
       "BasePath": "_content/YemekliYilan.Api",
       "RelativePath": "index.html",
       "AssetKind": "All",

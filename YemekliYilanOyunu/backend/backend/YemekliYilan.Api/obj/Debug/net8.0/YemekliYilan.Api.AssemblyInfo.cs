@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("YemekliYilan.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3ecb11272b0cd79d4b238ee9a22771731e05b6fe")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+921902f7376d12d810d8e30efecf4ba0e8771f98")]
 [assembly: System.Reflection.AssemblyProductAttribute("YemekliYilan.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("YemekliYilan.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

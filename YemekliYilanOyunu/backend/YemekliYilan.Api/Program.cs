@@ -1,8 +1,8 @@
 using System.Text;
-using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using YemekliYilan.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -81,6 +82,17 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -88,13 +100,40 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
         db.Database.EnsureCreated();
 
-        app.Logger.LogInformation("SQLite veritabanı başarıyla hazırlandı.");
+        db.Database.ExecuteSqlRaw("""
+            DROP TABLE IF EXISTS "GameSessions";
+        """);
+
+        db.Database.ExecuteSqlRaw("""
+            CREATE TABLE "GameSessions" (
+                "Id" INTEGER NOT NULL CONSTRAINT "PK_GameSessions" PRIMARY KEY AUTOINCREMENT,
+                "AppUserId" INTEGER NOT NULL,
+                "StartedAt" TEXT NOT NULL,
+                "FinishedAt" TEXT NULL,
+                "LastFoodAt" TEXT NULL,
+                "IsCompleted" INTEGER NOT NULL DEFAULT 0,
+                "LastSubmittedScore" INTEGER NOT NULL DEFAULT 0,
+                CONSTRAINT "FK_GameSessions_Users_AppUserId"
+                    FOREIGN KEY ("AppUserId")
+                    REFERENCES "Users" ("Id")
+                    ON DELETE CASCADE
+            );
+        """);
+
+        db.Database.ExecuteSqlRaw("""
+            CREATE INDEX IF NOT EXISTS "IX_GameSessions_AppUserId"
+            ON "GameSessions" ("AppUserId");
+        """);
+
+        app.Logger.LogInformation("SQLite veritabanı ve GameSessions tablosu doğru Users foreign key ile hazırlandı.");
     }
     catch (Exception ex)
     {
         app.Logger.LogError(ex, "SQLite veritabanı hazırlanırken hata oluştu.");
+        throw;
     }
 }
 

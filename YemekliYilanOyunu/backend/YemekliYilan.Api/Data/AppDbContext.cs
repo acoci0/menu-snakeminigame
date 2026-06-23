@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Score> Scores => Set<Score>();
 
+    public DbSet<GameSession> GameSessions => Set<GameSession>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -62,6 +64,38 @@ public class AppDbContext : DbContext
             entity.HasOne(x => x.AppUser)
                 .WithOne(x => x.Score)
                 .HasForeignKey<Score>(x => x.AppUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<GameSession>(entity =>
+        {
+            entity.ToTable("GameSessions");
+
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.AppUserId)
+                .IsRequired();
+
+            entity.Property(x => x.StartedAt)
+                .IsRequired();
+
+            entity.Property(x => x.FinishedAt)
+                .IsRequired(false);
+
+            entity.Property(x => x.LastFoodAt)
+                .IsRequired(false);
+
+            entity.Property(x => x.IsCompleted)
+                .IsRequired();
+
+            entity.Property(x => x.LastSubmittedScore)
+                .IsRequired();
+
+            entity.HasIndex(x => x.AppUserId);
+
+            entity.HasOne<AppUser>()
+                .WithMany()
+                .HasForeignKey(x => x.AppUserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

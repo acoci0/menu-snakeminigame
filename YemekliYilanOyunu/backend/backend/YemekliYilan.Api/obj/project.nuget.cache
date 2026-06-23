@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "4XTFb3zqWRY=",
+  "dgSpecHash": "6XJqAFejH/8=",
   "success": true,
-  "projectFilePath": "/Users/abdussamedcoci/Desktop/menü yılan oyunu/YemekliYilanOyunu/backend/backend/YemekliYilan.Api/YemekliYilan.Api.csproj",
+  "projectFilePath": "/Users/abdussamedcoci/Desktop/GitHub/menü yılan oyunu/YemekliYilanOyunu/backend/backend/YemekliYilan.Api/YemekliYilan.Api.csproj",
   "expectedPackageFiles": [
     "/Users/abdussamedcoci/.nuget/packages/microsoft.aspnetcore.authentication/2.3.0/microsoft.aspnetcore.authentication.2.3.0.nupkg.sha512",
     "/Users/abdussamedcoci/.nuget/packages/microsoft.aspnetcore.authentication.abstractions/2.3.0/microsoft.aspnetcore.authentication.abstractions.2.3.0.nupkg.sha512",
