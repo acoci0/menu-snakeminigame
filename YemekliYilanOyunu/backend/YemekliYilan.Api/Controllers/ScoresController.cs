@@ -97,7 +97,7 @@ public class ScoresController : ControllerBase
         const int InitialSnakeLength = 3;
         const int MaxPossibleScore = GridSize * GridSize - InitialSnakeLength;
 
-        const double MinimumSecondsBetweenFoods = 0.55;
+        const double MinimumSecondsBetweenFoods = 0.12;
         const int MaxSessionMinutes = 20;
 
         if (dto.GameSessionId <= 0)
