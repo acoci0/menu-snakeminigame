@@ -9,6 +9,10 @@
       "PackagePath": "staticwebassets/index.html"
     },
     {
+      "Id": "/Users/abdussamedcoci/Desktop/GitHub/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/kvkk.pdf",
+      "PackagePath": "staticwebassets/kvkk.pdf"
+    },
+    {
       "Id": "obj/Debug/net8.0/staticwebassets/msbuild.YemekliYilan.Api.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },

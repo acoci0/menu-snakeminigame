@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "9Kescz60UwKO3kcHKyWTf4Ug9Y2AZzwSrrYHYZ7cgYY=",
+  "Hash": "6HVliZFbP8YrhpLuCMJ6fGZyDIPBlUApc2A7qUac5gk=",
   "Source": "YemekliYilan.Api",
   "BasePath": "_content/YemekliYilan.Api",
   "Mode": "Default",
@@ -53,6 +53,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/index.html"
+    },
+    {
+      "Identity": "/Users/abdussamedcoci/Desktop/GitHub/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/kvkk.pdf",
+      "SourceId": "YemekliYilan.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/abdussamedcoci/Desktop/GitHub/menü yılan oyunu/YemekliYilanOyunu/backend/YemekliYilan.Api/wwwroot/",
+      "BasePath": "_content/YemekliYilan.Api",
+      "RelativePath": "kvkk.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/kvkk.pdf"
     }
   ]
 }
